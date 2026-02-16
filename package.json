@@ -1,0 +1,23 @@
+{
+  "name": "attendance-poap-dapp",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=20 <23"
+  },
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:shardeum": "hardhat run scripts/deploy.js --network shardeum",
+    "sign:attendee": "node scripts/sign-attendee.js",
+    "frontend": "npx serve frontend"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.10"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.2"
+  }
+}

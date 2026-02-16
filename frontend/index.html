@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
+    <title>Attendance POAP</title>
+    <style>
+      :root {
+        --bg: #0f1117;
+        --card: #1a1d28;
+        --card-border: #2a2d3a;
+        --text: #e4e6ef;
+        --muted: #8b8fa3;
+        --primary: #22c55e;
+        --primary-hover: #16a34a;
+        --primary-glow: rgba(34, 197, 94, 0.15);
+        --info-bg: #1e2433;
+        --info-border: #2a3348;
+        --success-bg: #0f2a1a;
+        --success-border: #1a4a2a;
+        --success-text: #4ade80;
+        --error-bg: #2a1215;
+        --error-border: #4a1a1e;
+        --error-text: #f87171;
+        --tab-bg: #13151e;
+        --input-bg: #13151e;
+        --input-border: #2a2d3a;
+        --input-focus: #22c55e;
+        --badge-org: #f59e0b;
+        --badge-att: #3b82f6;
+      }
+
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        line-height: 1.5;
+        padding: 20px;
+      }
+
+      .app { width: min(96vw, 560px); }
+
+      /* Header */
+      .header { text-align: center; margin-bottom: 24px; }
+      .header h1 { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+      .header h1 span { color: var(--primary); }
+      .header p { color: var(--muted); font-size: 0.9rem; }
+
+      /* Tabs */
+      .tabs {
+        display: flex; gap: 4px; background: var(--tab-bg);
+        border-radius: 12px; padding: 4px; margin-bottom: 20px;
+      }
+      .tab-btn {
+        flex: 1; border: none; background: transparent; color: var(--muted);
+        padding: 10px 16px; border-radius: 10px; cursor: pointer;
+        font-weight: 600; font-size: 0.9rem; transition: all 0.2s;
+        display: flex; align-items: center; justify-content: center; gap: 6px;
+      }
+      .tab-btn:hover { color: var(--text); }
+      .tab-btn.active {
+        background: var(--card); color: var(--text);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      }
+      .tab-badge {
+        font-size: 0.65rem; padding: 2px 6px; border-radius: 6px;
+        font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+      }
+      .badge-org { background: rgba(245,158,11,0.15); color: var(--badge-org); }
+      .badge-att { background: rgba(59,130,246,0.15); color: var(--badge-att); }
+
+      /* Card */
+      .card {
+        background: var(--card); border: 1px solid var(--card-border);
+        border-radius: 16px; padding: 24px;
+      }
+
+      .panel { display: none; }
+      .panel.active { display: block; }
+
+      /* Connect bar */
+      .connect-bar {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 12px; margin-bottom: 20px; padding: 12px 14px;
+        border-radius: 12px; background: var(--info-bg); border: 1px solid var(--info-border);
+      }
+      .connect-bar .wallet-info {
+        font-size: 0.82rem; color: var(--muted); overflow: hidden;
+        text-overflow: ellipsis; white-space: nowrap; min-width: 0;
+      }
+      .connect-bar .wallet-info strong { color: var(--text); font-weight: 500; }
+
+      /* Buttons */
+      .btn {
+        border: none; padding: 11px 20px; border-radius: 10px; cursor: pointer;
+        font-weight: 600; font-size: 0.88rem; transition: all 0.15s;
+        display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+      }
+      .btn-primary { background: var(--primary); color: #fff; }
+      .btn-primary:hover { background: var(--primary-hover); }
+      .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+      .btn-sm { padding: 8px 14px; font-size: 0.8rem; }
+      .btn-outline {
+        background: transparent; border: 1px solid var(--card-border); color: var(--text);
+      }
+      .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+      .btn-full { width: 100%; justify-content: center; }
+
+      /* Form */
+      .form-group { margin-bottom: 16px; }
+      .form-group label {
+        display: block; font-size: 0.82rem; font-weight: 600; color: var(--muted);
+        margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;
+      }
+      .form-group input, .form-group textarea {
+        width: 100%; background: var(--input-bg); border: 1px solid var(--input-border);
+        border-radius: 10px; padding: 11px 14px; color: var(--text); font-size: 0.9rem;
+        font-family: 'JetBrains Mono', 'Fira Code', monospace; outline: none;
+        transition: border-color 0.15s;
+      }
+      .form-group input:focus, .form-group textarea:focus { border-color: var(--input-focus); }
+      .form-group input::placeholder, .form-group textarea::placeholder { color: #4a4d5a; }
+      .form-group textarea { resize: vertical; min-height: 72px; }
+
+      /* Output box */
+      .output-box {
+        position: relative; background: var(--input-bg); border: 1px solid var(--input-border);
+        border-radius: 10px; padding: 12px 14px; padding-right: 80px;
+        font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.8rem;
+        word-break: break-all; color: var(--primary); min-height: 48px; line-height: 1.6;
+      }
+      .output-box .copy-btn { position: absolute; top: 8px; right: 8px; }
+      .output-box.empty { color: #4a4d5a; font-family: inherit; font-size: 0.85rem; }
+
+      /* Status */
+      .status {
+        margin-top: 16px; padding: 12px 14px; border-radius: 10px;
+        font-size: 0.85rem; line-height: 1.5; word-break: break-all; display: none;
+      }
+      .status.visible { display: block; }
+      .status.info { background: var(--info-bg); border: 1px solid var(--info-border); color: var(--muted); }
+      .status.success { background: var(--success-bg); border: 1px solid var(--success-border); color: var(--success-text); }
+      .status.error { background: var(--error-bg); border: 1px solid var(--error-border); color: var(--error-text); }
+
+      /* Steps */
+      .steps { display: flex; flex-direction: column; gap: 16px; }
+      .step { display: flex; gap: 14px; align-items: flex-start; }
+      .step-num {
+        flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px;
+        background: var(--primary-glow); color: var(--primary);
+        display: grid; place-items: center; font-size: 0.8rem; font-weight: 700;
+      }
+      .step-content { flex: 1; min-width: 0; }
+      .step-content h3 { font-size: 0.9rem; margin-bottom: 8px; }
+
+      /* Footer */
+      .footer { text-align: center; margin-top: 20px; font-size: 0.75rem; color: #4a4d5a; }
+
+      /* Spinner */
+      .spinner {
+        display: inline-block; width: 14px; height: 14px;
+        border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+        border-radius: 50%; animation: spin 0.6s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      @media (max-width: 480px) {
+        .connect-bar { flex-direction: column; align-items: stretch; }
+        .header h1 { font-size: 1.4rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="header">
+        <h1>On-Chain <span>Attendance</span></h1>
+        <p>POAP &mdash; Proof of Attendance Protocol on Shardeum</p>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="organizer">
+          Organizer <span class="tab-badge badge-org">Sign</span>
+        </button>
+        <button class="tab-btn" data-tab="attendee">
+          Attendee <span class="tab-badge badge-att">Mint</span>
+        </button>
+      </div>
+
+      <div class="card">
+        <!-- ===== ORGANIZER PANEL ===== -->
+        <div id="panel-organizer" class="panel active">
+          <div class="connect-bar">
+            <div class="wallet-info"><span id="org-wallet">Connect event signer wallet</span></div>
+            <button id="org-connectBtn" class="btn btn-primary btn-sm">Connect</button>
+          </div>
+          <div id="org-signer-warning" class="status error" style="display:none;margin-bottom:16px"></div>
+
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div class="step-content">
+                <h3>Enter attendee wallet address</h3>
+                <div class="form-group" style="margin-bottom:0">
+                  <input id="attendee-addr" type="text" placeholder="0x..." />
+                </div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div class="step-content">
+                <h3>Generate signature</h3>
+                <button id="org-signBtn" class="btn btn-primary" disabled>Sign in Wallet</button>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div class="step-content">
+                <h3>Share with attendee</h3>
+                <div id="org-output" class="output-box empty">Signature will appear here...</div>
+              </div>
+            </div>
+          </div>
+          <div id="org-status" class="status"></div>
+        </div>
+
+        <!-- ===== ATTENDEE PANEL ===== -->
+        <div id="panel-attendee" class="panel">
+          <div class="connect-bar">
+            <div class="wallet-info"><span id="att-wallet">Connect your wallet to mint</span></div>
+            <button id="att-connectBtn" class="btn btn-primary btn-sm">Connect</button>
+          </div>
+          <div class="form-group">
+            <label>Event Signature</label>
+            <textarea id="signature" placeholder="Paste the signature from the event organizer..."></textarea>
+          </div>
+          <button id="mintBtn" class="btn btn-primary btn-full" disabled>Mint Attendance NFT</button>
+          <div id="att-status" class="status"></div>
+        </div>
+      </div>
+
+      <div class="footer">Powered by Shardeum &middot; ERC-721</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.2/dist/ethers.umd.min.js"></script>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
