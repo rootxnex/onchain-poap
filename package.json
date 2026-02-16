@@ -6,6 +6,7 @@
     "node": ">=20 <23"
   },
   "scripts": {
+    "dev": "npx serve frontend",
     "compile": "hardhat compile",
     "test": "hardhat test",
     "deploy:shardeum": "hardhat run scripts/deploy.js --network shardeum",
